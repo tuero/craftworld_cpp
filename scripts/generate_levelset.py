@@ -112,30 +112,30 @@ def create_map(args):
     # Ingredients required for the goal
     for ingredient in ingredients:
         for i in range(ingredient[1]):
-            grid[random_free(grid, rng, blocked_tiles)] = ingredient[0]
+            grid[random_free_extra_space(grid, rng, blocked_tiles)] = ingredient[0]
 
     # If make_island, we need a bridge
     if make_island:
         for ingredient in RECIPES[kBridge]:
             for i in range(ingredient[1]):
-                grid[random_free(grid, rng, blocked_tiles)] = ingredient[0]
+                grid[random_free_extra_space(grid, rng, blocked_tiles)] = ingredient[0]
 
     # If make_cave, we need an axe
     if make_cave:
         for ingredient in RECIPES[kAxe]:
             for i in range(ingredient[1]):
-                grid[random_free(grid, rng, blocked_tiles)] = ingredient[0]
+                grid[random_free_extra_space(grid, rng, blocked_tiles)] = ingredient[0]
 
     # Other random ingredients to confuse
     for _ in range(N_RANDOM_PRIMITIVES):
-        grid[random_free(grid, rng, blocked_tiles)] = rng.choice(PRIMITIVES[:-2])
+        grid[random_free_extra_space(grid, rng, blocked_tiles)] = rng.choice(PRIMITIVES[:-2])
 
     # Crafting stations
     for workshop in WORKSHOPS:
         grid[random_free_extra_space(grid, rng, blocked_tiles)] = workshop
 
     # Place agent
-    grid[random_free(grid, rng, blocked_tiles)] = kAgent
+    grid[random_free_extra_space(grid, rng, blocked_tiles)] = kAgent
 
     # Set map str and store
     goal_str = "{}|{}|{}".format(map_size, map_size, goal)
