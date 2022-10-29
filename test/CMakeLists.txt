@@ -1,0 +1,7 @@
+add_executable(craftworld_test test.cpp)
+target_link_libraries(craftworld_test PUBLIC craftworld)
+add_test(craftworld_test craftworld_test)
+
+add_executable(craftworld_test_default test_default.cpp)
+target_link_libraries(craftworld_test_default PUBLIC craftworld)
+add_test(craftworld_test_default craftworld_test_default)
