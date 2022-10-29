@@ -97,7 +97,7 @@ def create_map(args):
     # Treasure (island or cave)
     if make_island or make_cave:
         treasure_type = kGold if make_island else kGem
-        wall_type = kWater if make_island else kWall
+        wall_type = kWater if make_island else kStone
         treasure_location = random_teasure_location(grid, rng)
         grid[treasure_location] = treasure_type
         wall_locations = [
