@@ -108,12 +108,17 @@ void CraftWorldGameState::HandleAgentUse() {
             if (HasItemInInventory(ElementType::kBridge)) {
                 RemoveFromInventory(ElementType::kBridge, 1);
                 board.item(neighbour_idx) = static_cast<char>(ElementType::kEmpty);
+                local_state.reward_signal |=
+                    static_cast<std::underlying_type_t<RewardCodes>>(RewardCodes::kRewardCodeUseBridge);
                 break;
             }
         } else if (IsItem(neighbour_idx, ElementType::kStone)) {
             // Remove stone with an axe
             if (HasItemInInventory(ElementType::kAxe)) {
                 board.item(neighbour_idx) = static_cast<char>(ElementType::kEmpty);
+                RemoveFromInventory(ElementType::kAxe, 1);
+                local_state.reward_signal |=
+                    static_cast<std::underlying_type_t<RewardCodes>>(RewardCodes::kRewardCodeUseAxe);
                 break;
             }
         }
@@ -195,9 +200,19 @@ std::vector<int> CraftWorldGameState::get_pruned_subgoals() const {
     // Check if we can make the items
     for (const auto &[_, recipe_item] : kRecipeMap) {
         if (CanCraftItem(recipe_item, world_inventory)) {
-            subgoals.push_back(static_cast<int>(recipe_item.output));
+            subgoals.push_back(static_cast<int>(recipe_item.output) - static_cast<int>(ElementType::kPlank));
         }
     }
+
+    // Add use axe/bridge
+    if (local_state.inventory.find(ElementType::kAxe) != local_state.inventory.end()) {
+        subgoals.push_back(static_cast<int>(Subgoals::kUseAxe));
+    }
+    if (local_state.inventory.find(ElementType::kBridge) != local_state.inventory.end()) {
+        subgoals.push_back(static_cast<int>(Subgoals::kUseBridge));
+    }
+
+
     return subgoals;
 }
 

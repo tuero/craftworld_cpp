@@ -37,13 +37,39 @@ enum class ElementType {
     kEmpty = 23,
 };
 
+enum class Subgoals {
+    kCraftPlank = 0,
+    kCraftAxe = 1,
+    kCraftRope = 2,
+    kCraftStick = 3,
+    kCraftBed = 4,
+    kCraftShears = 5,
+    kCraftCloth = 6,
+    kCraftBridge = 7,
+    kCraftLadder = 8,
+    kCraftGoldBar = 9,
+    kCraftGemRing = 10,
+    kUseAxe = 11,
+    kUseBridge = 12,
+};
+
+// const std::vector<int> all_subgoals{
+//     static_cast<int>(ElementType::kPlank),   static_cast<int>(ElementType::kAxe),
+//     static_cast<int>(ElementType::kRope),    static_cast<int>(ElementType::kStick),
+//     static_cast<int>(ElementType::kBed),     static_cast<int>(ElementType::kShears),
+//     static_cast<int>(ElementType::kCloth),   static_cast<int>(ElementType::kBridge),
+//     static_cast<int>(ElementType::kLadder),  static_cast<int>(ElementType::kGoldBar),
+//     static_cast<int>(ElementType::kGemRing),
+// };
 const std::vector<int> all_subgoals{
-    static_cast<int>(ElementType::kPlank),   static_cast<int>(ElementType::kAxe),
-    static_cast<int>(ElementType::kRope),    static_cast<int>(ElementType::kStick),
-    static_cast<int>(ElementType::kBed),     static_cast<int>(ElementType::kShears),
-    static_cast<int>(ElementType::kCloth),   static_cast<int>(ElementType::kBridge),
-    static_cast<int>(ElementType::kLadder),  static_cast<int>(ElementType::kGoldBar),
-    static_cast<int>(ElementType::kGemRing),
+    static_cast<int>(Subgoals::kCraftPlank),   static_cast<int>(Subgoals::kCraftAxe),
+    static_cast<int>(Subgoals::kCraftRope),    static_cast<int>(Subgoals::kCraftStick),
+    static_cast<int>(Subgoals::kCraftBed),     static_cast<int>(Subgoals::kCraftShears),
+    static_cast<int>(Subgoals::kCraftCloth),   static_cast<int>(Subgoals::kCraftBridge),
+    static_cast<int>(Subgoals::kCraftLadder),  static_cast<int>(Subgoals::kCraftGoldBar),
+    static_cast<int>(Subgoals::kCraftGemRing), 
+    static_cast<int>(Subgoals::kUseAxe),
+    static_cast<int>(Subgoals::kUseBridge),
 };
 
 constexpr int kNumElementTypes = 24;
@@ -76,11 +102,13 @@ enum class RewardCodes : uint64_t {
     kRewardCodeCraftLadder = 1 << 8,
     kRewardCodeCraftGoldBar = 1 << 9,
     kRewardCodeCraftGemRing = 1 << 10,
-    kRewardCodeCollectIron = 1 << 11,
-    kRewardCodeCollectGrass = 1 << 12,
-    kRewardCodeCollectWood = 1 << 13,
-    kRewardCodeCollectGold = 1 << 14,
-    kRewardCodeCollectGem = 1 << 15,
+    kRewardCodeUseAxe = 1 << 11,
+    kRewardCodeUseBridge = 1 << 12,
+    kRewardCodeCollectIron = 1 << 13,
+    kRewardCodeCollectGrass = 1 << 14,
+    kRewardCodeCollectWood = 1 << 15,
+    kRewardCodeCollectGold = 1 << 16,
+    kRewardCodeCollectGem = 1 << 17,
 };
 
 constexpr int kNumRecipeTypes = 11;
@@ -187,7 +215,7 @@ const std::unordered_map<ElementType, RewardCodes> kPrimitiveRewardMap{
     {ElementType::kGrass, RewardCodes::kRewardCodeCollectGrass},
     {ElementType::kWood, RewardCodes::kRewardCodeCollectWood},
     {ElementType::kGold, RewardCodes::kRewardCodeCollectGold},
-    {ElementType::kGem, RewardCodes::kRewardCodeCollectGem},  
+    {ElementType::kGem, RewardCodes::kRewardCodeCollectGem},
 };
 
 const std::unordered_map<RecipeType, RewardCodes> kRecipeRewardMap{

@@ -55,6 +55,20 @@ def random_free(grid, rng, blocked_tiles):
     return empty_coords[rng.choice(len(empty_coords))]
 
 
+def in_bounds(r, c, width, height):
+    return r >= 0 and c >= 0 and r < width and c < height
+
+def is_beside_workshop(grid, r, c):
+    width, height = grid.shape
+    for dr in range(-1, 2):
+        for dc in range(-1, 2):
+            new_r = r + dr
+            new_c = c + dc 
+            if in_bounds(new_r, new_c, width, height) and grid[new_r, new_c] in WORKSHOPS:
+                return True 
+    return False
+
+
 def is_empty_around(grid, r, c):
     width, height = grid.shape
     for dr in range(-1, 2):
@@ -62,8 +76,9 @@ def is_empty_around(grid, r, c):
             new_r = r + dr
             new_c = c + dc 
             # If in bounds AND blocked, skip
-            if new_r >= 0 and new_c >= 0 and new_r < width and new_c < height and grid[new_r, new_c] != kEmpty:
+            if in_bounds(new_r, new_c, width, height) and (grid[new_r, new_c] != kEmpty or is_beside_workshop(grid, new_r, new_c)):
                 return False 
+            
     return True
 
 def random_free_extra_space(grid, rng, blocked_tiles):
