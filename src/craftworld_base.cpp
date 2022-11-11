@@ -101,6 +101,8 @@ void CraftWorldGameState::HandleAgentUse() {
                 }
                 local_state.reward_signal |=
                     static_cast<std::underlying_type_t<RewardCodes>>(kRecipeRewardMap.at(recipe_item.recipe));
+                local_state.reward_signal |=
+                    static_cast<std::underlying_type_t<RewardCodes>>(kWorkstationRewardMap.at(el_workshop));
             }
             break;
         } else if (IsItem(neighbour_idx, ElementType::kWater)) {
@@ -183,35 +185,86 @@ int CraftWorldGameState::get_agent_index() const {
     return board.agent_idx;
 }
 
+// std::vector<int> CraftWorldGameState::get_pruned_subgoals() const {
+//     std::vector<int> subgoals;
+//     // Can only do a subgoal if we have the recipe ingredients for it or the items required are in the map
+//     std::unordered_map<ElementType, int> world_inventory;    // Inventory of items on the map
+//     for (int index = 0; index < board.rows * board.cols; ++index) {
+//         if (IsPrimitive(index)) {
+//             ++world_inventory[static_cast<ElementType>(board.item(index))];
+//         }
+//     }
+//     // Combine inventories
+//     for (const auto &[element, count] : local_state.inventory) {
+//         world_inventory[element] += count;
+//     }
+
+//     // Check if we can make the items
+//     for (const auto &[_, recipe_item] : kRecipeMap) {
+//         if (CanCraftItem(recipe_item, world_inventory)) {
+//             subgoals.push_back(static_cast<int>(recipe_item.output) - static_cast<int>(ElementType::kPlank));
+//         }
+//     }
+
+//     // Add use axe/bridge
+//     if (local_state.inventory.find(ElementType::kAxe) != local_state.inventory.end()) {
+//         subgoals.push_back(static_cast<int>(Subgoals::kUseAxe));
+//     }
+//     if (local_state.inventory.find(ElementType::kBridge) != local_state.inventory.end()) {
+//         subgoals.push_back(static_cast<int>(Subgoals::kUseBridge));
+//     }
+
+//     return subgoals;
+// }
 std::vector<int> CraftWorldGameState::get_pruned_subgoals() const {
     std::vector<int> subgoals;
-    // Can only do a subgoal if we have the recipe ingredients for it or the items required are in the map
+    // Can only get primitives if its on the map
     std::unordered_map<ElementType, int> world_inventory;    // Inventory of items on the map
     for (int index = 0; index < board.rows * board.cols; ++index) {
         if (IsPrimitive(index)) {
             ++world_inventory[static_cast<ElementType>(board.item(index))];
         }
     }
-    // Combine inventories
-    for (const auto &[element, count] : local_state.inventory) {
-        world_inventory[element] += count;
-    }
-
-    // Check if we can make the items
-    for (const auto &[_, recipe_item] : kRecipeMap) {
-        if (CanCraftItem(recipe_item, world_inventory)) {
-            subgoals.push_back(static_cast<int>(recipe_item.output) - static_cast<int>(ElementType::kPlank));
+    for (const auto & [element, _] : world_inventory) {
+        switch (element) {
+            case ElementType::kIron:
+                subgoals.push_back(static_cast<int>(Subgoals::kCollectIron));
+                break;
+            case ElementType::kGrass:
+                subgoals.push_back(static_cast<int>(Subgoals::kCollectGrass));
+                break;
+            case ElementType::kWood:
+                subgoals.push_back(static_cast<int>(Subgoals::kCollectWood));
+                break;
+            case ElementType::kGold:
+                subgoals.push_back(static_cast<int>(Subgoals::kCollectGold));
+                break;
+            case ElementType::kGem:
+                subgoals.push_back(static_cast<int>(Subgoals::kCollectGem));
+                break;
+            default:
+                __builtin_unreachable();
         }
     }
 
-    // Add use axe/bridge
-    if (local_state.inventory.find(ElementType::kAxe) != local_state.inventory.end()) {
-        subgoals.push_back(static_cast<int>(Subgoals::kUseAxe));
+    // Check if we can make the items and use that workstation
+    for (const auto &[_, recipe_item] : kRecipeMap) {
+        if (CanCraftItem(recipe_item, local_state.inventory)) {
+            switch (recipe_item.location) {
+                case ElementType::kWorkshop0:
+                    subgoals.push_back(static_cast<int>(Subgoals::kUseStation1));
+                    break;
+                case ElementType::kWorkshop1:
+                    subgoals.push_back(static_cast<int>(Subgoals::kUseStation2));
+                    break;
+                case ElementType::kWorkshop2:
+                    subgoals.push_back(static_cast<int>(Subgoals::kUseStation3));
+                    break;
+                default:
+                    __builtin_unreachable();
+            }
+        }
     }
-    if (local_state.inventory.find(ElementType::kBridge) != local_state.inventory.end()) {
-        subgoals.push_back(static_cast<int>(Subgoals::kUseBridge));
-    }
-
 
     return subgoals;
 }

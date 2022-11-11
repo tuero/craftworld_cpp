@@ -37,39 +37,47 @@ enum class ElementType {
     kEmpty = 23,
 };
 
+// enum class Subgoals {
+//     kCraftPlank = 0,
+//     kCraftAxe = 1,
+//     kCraftRope = 2,
+//     kCraftStick = 3,
+//     kCraftBed = 4,
+//     kCraftShears = 5,
+//     kCraftCloth = 6,
+//     kCraftBridge = 7,
+//     kCraftLadder = 8,
+//     kCraftGoldBar = 9,
+//     kCraftGemRing = 10,
+//     kUseAxe = 11,
+//     kUseBridge = 12,
+// };
 enum class Subgoals {
-    kCraftPlank = 0,
-    kCraftAxe = 1,
-    kCraftRope = 2,
-    kCraftStick = 3,
-    kCraftBed = 4,
-    kCraftShears = 5,
-    kCraftCloth = 6,
-    kCraftBridge = 7,
-    kCraftLadder = 8,
-    kCraftGoldBar = 9,
-    kCraftGemRing = 10,
-    kUseAxe = 11,
-    kUseBridge = 12,
+    kCollectIron = 0,
+    kCollectGrass = 1,
+    kCollectWood = 2,
+    kCollectGold = 3,
+    kCollectGem = 4,
+    kUseStation1 = 5,
+    kUseStation2 = 6,
+    kUseStation3 = 7,
 };
 
 // const std::vector<int> all_subgoals{
-//     static_cast<int>(ElementType::kPlank),   static_cast<int>(ElementType::kAxe),
-//     static_cast<int>(ElementType::kRope),    static_cast<int>(ElementType::kStick),
-//     static_cast<int>(ElementType::kBed),     static_cast<int>(ElementType::kShears),
-//     static_cast<int>(ElementType::kCloth),   static_cast<int>(ElementType::kBridge),
-//     static_cast<int>(ElementType::kLadder),  static_cast<int>(ElementType::kGoldBar),
-//     static_cast<int>(ElementType::kGemRing),
+//     static_cast<int>(Subgoals::kCraftPlank),   static_cast<int>(Subgoals::kCraftAxe),
+//     static_cast<int>(Subgoals::kCraftRope),    static_cast<int>(Subgoals::kCraftStick),
+//     static_cast<int>(Subgoals::kCraftBed),     static_cast<int>(Subgoals::kCraftShears),
+//     static_cast<int>(Subgoals::kCraftCloth),   static_cast<int>(Subgoals::kCraftBridge),
+//     static_cast<int>(Subgoals::kCraftLadder),  static_cast<int>(Subgoals::kCraftGoldBar),
+//     static_cast<int>(Subgoals::kCraftGemRing), 
+//     static_cast<int>(Subgoals::kUseAxe),
+//     static_cast<int>(Subgoals::kUseBridge),
 // };
 const std::vector<int> all_subgoals{
-    static_cast<int>(Subgoals::kCraftPlank),   static_cast<int>(Subgoals::kCraftAxe),
-    static_cast<int>(Subgoals::kCraftRope),    static_cast<int>(Subgoals::kCraftStick),
-    static_cast<int>(Subgoals::kCraftBed),     static_cast<int>(Subgoals::kCraftShears),
-    static_cast<int>(Subgoals::kCraftCloth),   static_cast<int>(Subgoals::kCraftBridge),
-    static_cast<int>(Subgoals::kCraftLadder),  static_cast<int>(Subgoals::kCraftGoldBar),
-    static_cast<int>(Subgoals::kCraftGemRing), 
-    static_cast<int>(Subgoals::kUseAxe),
-    static_cast<int>(Subgoals::kUseBridge),
+    static_cast<int>(Subgoals::kCollectIron),   static_cast<int>(Subgoals::kCollectGrass),
+    static_cast<int>(Subgoals::kCollectWood),    static_cast<int>(Subgoals::kCollectGold),
+    static_cast<int>(Subgoals::kCollectGem),     static_cast<int>(Subgoals::kUseStation1),
+    static_cast<int>(Subgoals::kUseStation2),   static_cast<int>(Subgoals::kUseStation3),
 };
 
 constexpr int kNumElementTypes = 24;
@@ -109,6 +117,9 @@ enum class RewardCodes : uint64_t {
     kRewardCodeCollectWood = 1 << 15,
     kRewardCodeCollectGold = 1 << 16,
     kRewardCodeCollectGem = 1 << 17,
+    kRewardCodeUseAtWorkstation1 = 1 << 18,
+    kRewardCodeUseAtWorkstation2 = 1 << 19,
+    kRewardCodeUseAtWorkstation3 = 1 << 20,
 };
 
 constexpr int kNumRecipeTypes = 11;
@@ -230,6 +241,11 @@ const std::unordered_map<RecipeType, RewardCodes> kRecipeRewardMap{
     {RecipeType::kLadder, RewardCodes::kRewardCodeCraftLadder},
     {RecipeType::kGoldBar, RewardCodes::kRewardCodeCraftGoldBar},
     {RecipeType::kGemRing, RewardCodes::kRewardCodeCraftGemRing},
+};
+const std::unordered_map<ElementType, RewardCodes> kWorkstationRewardMap{
+    {ElementType::kWorkshop0, RewardCodes::kRewardCodeUseAtWorkstation1},
+    {ElementType::kWorkshop1, RewardCodes::kRewardCodeUseAtWorkstation2},
+    {ElementType::kWorkshop2, RewardCodes::kRewardCodeUseAtWorkstation3},
 };
 
 const std::unordered_map<ElementType, std::string> kElementToSymbolMap{
