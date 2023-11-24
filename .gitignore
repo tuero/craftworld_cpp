@@ -1,0 +1,11 @@
+# Build products
+build/
+build*/
+cmake-build-*/
+dist/
+
+# IDE
+.idea/
+.vscode/
+.cache/
+compile_commands.json

@@ -1,0 +1,8 @@
+---
+Checks:          '-*,abseil-*,clang-analyzer-*,cppcoreguidelines-*,misc-*,modernize-*,-modernize-use-trailing-return-type,-clang-analyzer-*,-header-filters=.*'
+WarningsAsErrors: true
+UseColor: true
+CheckOptions:
+  - key:             modernize-use-nullptr.NullMacros
+    value:           'NULL'
+...
