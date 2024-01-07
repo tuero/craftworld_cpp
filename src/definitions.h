@@ -279,6 +279,12 @@ const std::unordered_set<Element> kPrimitives{
     Element::kGrass, Element::kWood, Element::kGold, Element::kGem, Element::kCopper, Element::kTin,
 };
 
+const std::unordered_map<Element, Element> kWorkshopSwap{
+    {Element::kWorkshop1, Element::kWorkshop2},
+    {Element::kWorkshop2, Element::kWorkshop3},
+    {Element::kWorkshop3, Element::kWorkshop1},
+};
+
 // Directions the interactions take place
 enum class Action {
     kUp = 0,

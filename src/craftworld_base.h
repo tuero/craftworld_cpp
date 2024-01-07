@@ -30,6 +30,7 @@ using GameParameters = std::unordered_map<std::string, GameParameter>;
 static const GameParameters kDefaultGameParams{
     {"rng_seed", GameParameter(0)},    // Seed for anything that uses the rng
     {"game_board_str", GameParameter(std::string("3|3|10|00|11|21|21|21|21|21|21|21"))},    // Game board string
+    {"workshop_swap", GameParameter(false)},                                                // Game board string
 };
 
 // Shared global state information relevant to all states for the given game
@@ -39,7 +40,8 @@ struct SharedStateInfo {
           rng_seed(std::get<int>(params.at("rng_seed"))),
           game_board_str(std::get<std::string>(params.at("game_board_str"))),
           gen(rng_seed),
-          dist(0) {}
+          dist(0),
+          workshop_swap(std::get<bool>(params.at("workshop_swap"))) {}
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     GameParameters params;                                        // Copy of game parameters for state resetting
     int rng_seed;                                                 // Seed
@@ -50,6 +52,7 @@ struct SharedStateInfo {
     std::unordered_map<std::size_t, uint64_t> zrbht_inventory;    // Zobrist hashing table for inventory
     std::vector<std::size_t> neighbours;                          // Reusable buffer for finding neighbours
     const std::size_t MAX_INV_HASH_ITEMS = 20;                    // NOLINT
+    bool workshop_swap = false;                                   // NOLINT
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 

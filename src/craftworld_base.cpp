@@ -112,7 +112,9 @@ void CraftWorldGameState::HandleAgentUse() noexcept {
             const Element el_workshop = board.item(neighbour_idx);
             for (const auto &[recipe_type, recipe_item] : kRecipeMap) {
                 // Skip recipes not legal at this workshop
-                if (recipe_item.location != el_workshop) {
+                const auto recipe_workshop =
+                    shared_state_ptr->workshop_swap ? kWorkshopSwap.at(recipe_item.location) : recipe_item.location;
+                if (recipe_workshop != el_workshop) {
                     continue;
                 }
                 // Skip if we don't have the items required in our inventory
