@@ -8,6 +8,19 @@
 
 namespace craftworld {
 
+namespace {
+[[noreturn]] inline void unreachable() {
+    // Uses compiler specific extensions if possible.
+    // Even if no extension is used, undefined behavior is still raised by
+    // an empty function body and the noreturn attribute.
+#if defined(_MSC_VER) && !defined(__clang__)    // MSVC
+    __assume(false);
+#else    // GCC, Clang
+    __builtin_unreachable();
+#endif
+}
+}    // namespace
+
 auto LocalState::operator==(const LocalState &other) const noexcept -> bool {
     return inventory == other.inventory;
 }
@@ -203,7 +216,7 @@ void CraftWorldGameState::get_observation(std::vector<float> &obs) const noexcep
 
     obs.clear();
     obs.reserve(obs_size);
-    std::fill_n(std::back_inserter(obs), obs_size, 0);
+    std::fill_n(std::back_inserter(obs), obs_size, static_cast<float>(0));
 
     // Board environment + primitives + agent
     for (std::size_t i = 0; i < channel_length; ++i) {
@@ -215,16 +228,17 @@ void CraftWorldGameState::get_observation(std::vector<float> &obs) const noexcep
     // Inventory (entire channel is filled with # of that item)
     for (const auto &[inv_el, inv_count] : local_state.inventory) {
         const auto channel = static_cast<std::size_t>(inv_el) + kNumEnvironment;
-        std::fill_n(obs.begin() + static_cast<int>(channel * channel_length), channel_length, inv_count);
+        std::fill_n(obs.begin() + static_cast<int>(channel * channel_length), channel_length,
+                    static_cast<float>(inv_count));
     }
     // Current goal for this level (26-34)
     const std::size_t channel = kNumChannels - kNumGoals + static_cast<std::size_t>(board.goal) - kRecipeStart;
-    std::fill_n(obs.begin() + static_cast<int>(channel * channel_length), channel_length, 1);
+    std::fill_n(obs.begin() + static_cast<int>(channel * channel_length), channel_length, static_cast<float>(1));
 }
 
 auto CraftWorldGameState::get_observation_environment() const noexcept -> std::vector<float> {
     const std::size_t channel_length = board.cols * board.rows;
-    std::vector<float> obs((kNumEnvironment + kNumPrimitive) * channel_length, 0);
+    std::vector<float> obs((kNumEnvironment + kNumPrimitive) * channel_length, static_cast<float>(0));
     get_observation_environment(obs);
     return obs;
 }
@@ -379,7 +393,7 @@ auto CraftWorldGameState::IndexFromAction(std::size_t index, Action action) cons
         case Action::kUse:
             return index;
         default:
-            __builtin_unreachable();
+            unreachable();
     }
 }
 
