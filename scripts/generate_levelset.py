@@ -50,6 +50,7 @@ RECIPES = {
     kGemRing: [(kIron, 1), (kWood, 2), (kCopper, 1), (kTin, 1)],
 }
 RECIPE_PROBS_TRAIN = [0.2, 0.3, 0.5]
+RECIPE_PROBS_HARD = [0.0, 0.05, 0.95]
 RECIPE_PROBS_TEST = [0.0, 0.0, 1.0]
 WORKSHOPS = [kWorkshop1, kWorkshop2, kWorkshop3, kFurnace]
 N_RANDOM_PRIMITIVES = 0
@@ -237,6 +238,13 @@ def main():
         type=int,
         default=0,
     )
+    parser.add_argument(
+        "--hard",
+        help="Only hard problems",
+        required=False,
+        type=bool,
+        default=False,
+    )
     args = parser.parse_args()
     global N_RANDOM_PRIMITIVES
     N_RANDOM_PRIMITIVES = args.num_primitive
@@ -249,7 +257,12 @@ def main():
         p.map(
             create_map,
             [
-                (data, args.map_size, i, RECIPE_PROBS_TRAIN)
+                (
+                    data,
+                    args.map_size,
+                    i,
+                    RECIPE_PROBS_TRAIN if not args.hard else RECIPE_PROBS_HARD,
+                )
                 for i in range(args.num_train)
             ],
         )

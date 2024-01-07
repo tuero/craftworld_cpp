@@ -282,8 +282,8 @@ const std::unordered_set<Element> kPrimitives{
 const std::unordered_map<Element, Element> kLocationSwap{
     {Element::kWorkshop1, Element::kWorkshop2},
     {Element::kWorkshop2, Element::kWorkshop3},
-    {Element::kWorkshop3, Element::kWorkshop1},
-    {Element::kFurnace, Element::kFurnace},
+    {Element::kWorkshop3, Element::kFurnace},
+    {Element::kFurnace, Element::kWorkshop1},
 };
 
 // Directions the interactions take place
