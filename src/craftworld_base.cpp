@@ -248,7 +248,7 @@ void CraftWorldGameState::get_observation_environment(std::vector<float> &obs) c
     const std::size_t obs_size = (kNumEnvironment + kNumPrimitive) * channel_length;
     obs.clear();
     obs.reserve(obs_size);
-    std::fill_n(std::back_inserter(obs), obs_size, 0);
+    std::fill_n(std::back_inserter(obs), obs_size, static_cast<float>(0));
 
     // Board environment + primitives + agent (0-11)
     for (std::size_t i = 0; i < channel_length; ++i) {
