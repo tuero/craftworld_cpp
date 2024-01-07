@@ -113,7 +113,7 @@ void CraftWorldGameState::HandleAgentUse() noexcept {
             for (const auto &[recipe_type, recipe_item] : kRecipeMap) {
                 // Skip recipes not legal at this workshop
                 const auto recipe_workshop =
-                    shared_state_ptr->workshop_swap ? kWorkshopSwap.at(recipe_item.location) : recipe_item.location;
+                    shared_state_ptr->workshop_swap ? kLocationSwap.at(recipe_item.location) : recipe_item.location;
                 if (recipe_workshop != el_workshop) {
                     continue;
                 }
