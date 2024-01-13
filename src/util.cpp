@@ -1,6 +1,4 @@
 #include <cassert>
-#include <exception>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -22,9 +20,9 @@ auto parse_board_str(const std::string &board_str) -> Board {
     }
 
     // Get general info
-    const std::size_t rows = std::stoi(seglist[0]);
-    const std::size_t cols = std::stoi(seglist[1]);
-    const std::size_t goal = std::stoi(seglist[2]);
+    const auto rows = static_cast<std::size_t>(std::stoi(seglist[0]));
+    const auto cols = static_cast<std::size_t>(std::stoi(seglist[1]));
+    const auto goal = static_cast<std::size_t>(std::stoi(seglist[2]));
     if (seglist.size() != static_cast<std::size_t>(rows * cols) + 3) {
         throw std::invalid_argument("Supplied rows/cols does not match input board length.");
     }

@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include "definitions.h"
+#include "util.h"
 
 namespace craftworld {
 
@@ -47,7 +48,7 @@ void CraftWorldGameState::reset() {
     const std::size_t board_size = board.rows * board.cols;
 
     // Zorbist hashing for board
-    std::mt19937 gen(shared_state_ptr->rng_seed);
+    std::mt19937 gen(static_cast<unsigned long>(shared_state_ptr->rng_seed));
     std::uniform_int_distribution<uint64_t> dist(0);
     for (std::size_t channel = 0; channel < kNumElements; ++channel) {
         for (std::size_t i = 0; i < board_size; ++i) {
@@ -57,7 +58,7 @@ void CraftWorldGameState::reset() {
 
     // Set initial hash for game world
     for (std::size_t i = 0; i < board_size; ++i) {
-        board.zorb_hash ^= shared_state_ptr->zrbht_world.at((static_cast<int>(board.item(i)) * board_size) + i);
+        board.zorb_hash ^= shared_state_ptr->zrbht_world.at((static_cast<std::size_t>(board.item(i)) * board_size) + i);
     }
     // Zorbist hashing for inventory
     for (std::size_t channel = 0; channel < kNumElements; ++channel) {
@@ -138,7 +139,7 @@ void CraftWorldGameState::HandleAgentUse() noexcept {
                 // Add crafted item and remove ingredients from inventory
                 AddToInventory(recipe_item.output, 1);
                 for (auto const &ingredient_item : recipe_item.inputs) {
-                    RemoveFromInventory(ingredient_item.element, ingredient_item.count);
+                    RemoveFromInventory(ingredient_item.element, static_cast<std::size_t>(ingredient_item.count));
                 }
                 local_state.reward_signal |=
                     static_cast<std::underlying_type_t<RewardCode>>(kRecipeRewardMap.at(recipe_item.recipe));
@@ -399,7 +400,7 @@ auto CraftWorldGameState::IndexFromAction(std::size_t index, Action action) cons
 
 auto CraftWorldGameState::InBounds(std::size_t index, Action action) const noexcept -> bool {
     int col = static_cast<int>(index % board.cols);
-    int row = static_cast<int>((index - col) / board.cols);
+    int row = static_cast<int>((static_cast<int>(index) - col) / static_cast<int>(board.cols));
     const std::pair<int, int> &offsets = kDirectionOffsets.at(static_cast<std::size_t>(action));
     col += offsets.first;
     row += offsets.second;
@@ -460,7 +461,7 @@ void CraftWorldGameState::AddToInventory(Element element, std::size_t count) noe
 
 auto CraftWorldGameState::CanCraftItem(RecipeItem recipe_item) const noexcept -> bool {
     for (auto const &ingredient_item : recipe_item.inputs) {
-        if (!HasItemInInventory(ingredient_item.element, ingredient_item.count)) {
+        if (!HasItemInInventory(ingredient_item.element, static_cast<std::size_t>(ingredient_item.count))) {
             return false;
         }
     }

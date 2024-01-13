@@ -7,11 +7,9 @@
 #include <random>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <variant>
 
 #include "definitions.h"
-#include "util.h"
 
 namespace craftworld {
 
@@ -39,7 +37,7 @@ struct SharedStateInfo {
         : params(params),
           rng_seed(std::get<int>(params.at("rng_seed"))),
           game_board_str(std::get<std::string>(params.at("game_board_str"))),
-          gen(rng_seed),
+          gen(static_cast<unsigned long>(rng_seed)),
           dist(0),
           workshop_swap(std::get<bool>(params.at("workshop_swap"))) {}
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
