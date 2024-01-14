@@ -315,8 +315,8 @@ const std::array<std::pair<int, int>, 5> kDirectionOffsets{{
 
 struct Board {
     Board() = delete;
-    Board(std::size_t rows, std::size_t cols, Element goal)
-        : rows(rows), cols(cols), goal(goal), grid(rows * cols, Element::kEmpty) {}
+    Board(std::size_t rows_, std::size_t cols_, Element goal_)
+        : rows(rows_), cols(cols_), goal(goal_), grid(rows_ * cols_, Element::kEmpty) {}
 
     bool operator==(const Board &other) const {
         return grid == other.grid;

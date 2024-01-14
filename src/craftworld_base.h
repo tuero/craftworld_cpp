@@ -27,14 +27,21 @@ using GameParameters = std::unordered_map<std::string, GameParameter>;
 // Default game parameters
 static const GameParameters kDefaultGameParams{
     {"rng_seed", GameParameter(0)},    // Seed for anything that uses the rng
-    {"game_board_str", GameParameter(std::string("3|3|10|00|11|21|21|21|21|21|21|21"))},    // Game board string
-    {"workshop_swap", GameParameter(false)},                                                // Game board string
+    {"game_board_str",
+     GameParameter(std::string(
+         "14|14|25|26|26|26|26|08|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|12|26|07|26|26|26|"
+         "26|26|26|26|26|26|26|26|26|07|14|07|26|26|26|26|12|26|26|26|26|26|26|26|07|26|26|26|26|26|26|26|11|26|26|26|"
+         "26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|04|26|26|26|26|26|26|26|26|26|02|26|26|26|26|26|26|26|26|26|26|"
+         "26|26|26|26|26|26|26|26|26|26|26|26|10|26|26|26|26|26|11|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|"
+         "26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|00|26|26|26|05|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|"
+         "26|26|26|26|26|03|26|26|26|09|26|26|26|26|26|26|26|26|26"))},    // Game board string
+    {"workshop_swap", GameParameter(false)},                               // Game board string
 };
 
 // Shared global state information relevant to all states for the given game
 struct SharedStateInfo {
-    SharedStateInfo(const GameParameters &params)
-        : params(params),
+    SharedStateInfo(GameParameters params_)
+        : params(std::move(params_)),
           rng_seed(std::get<int>(params.at("rng_seed"))),
           game_board_str(std::get<std::string>(params.at("game_board_str"))),
           gen(static_cast<unsigned long>(rng_seed)),

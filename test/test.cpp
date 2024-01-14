@@ -3,7 +3,6 @@
 #include <iostream>
 
 using namespace craftworld;
-using namespace craftworld::util;
 
 const std::unordered_map<std::string, Action> ActionMap{
     {"w", Action::kUp}, {"d", Action::kRight}, {"s", Action::kDown}, {"a", Action::kLeft}, {"e", Action::kUse},
