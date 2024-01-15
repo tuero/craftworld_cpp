@@ -170,7 +170,18 @@ void CraftWorldGameState::HandleAgentUse() noexcept {
     }
 }
 
-void CraftWorldGameState::apply_action(Action action) noexcept {
+void CraftWorldGameState::apply_action(Action action) {
+    switch (action) {
+        case Action::kUp:
+        case Action::kRight:
+        case Action::kDown:
+        case Action::kLeft:
+        case Action::kUse:
+            break;
+        default:
+            throw std::invalid_argument("Unknown action.");
+    }
+
     local_state.reward_signal = 0;
     if (action == Action::kUse) {
         HandleAgentUse();
