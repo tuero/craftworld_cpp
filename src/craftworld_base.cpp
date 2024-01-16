@@ -48,7 +48,7 @@ void CraftWorldGameState::reset() {
     const std::size_t board_size = board.rows * board.cols;
 
     // Zorbist hashing for board
-    std::mt19937 gen(static_cast<unsigned long>(shared_state_ptr->rng_seed));
+    std::mt19937 gen(static_cast<std::mt19937::result_type>(shared_state_ptr->rng_seed));
     std::uniform_int_distribution<uint64_t> dist(0);
     for (std::size_t channel = 0; channel < kNumElements; ++channel) {
         for (std::size_t i = 0; i < board_size; ++i) {
