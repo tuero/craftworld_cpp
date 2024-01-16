@@ -44,7 +44,7 @@ struct SharedStateInfo {
         : params(std::move(params_)),
           rng_seed(std::get<int>(params.at("rng_seed"))),
           game_board_str(std::get<std::string>(params.at("game_board_str"))),
-          gen(static_cast<unsigned long>(rng_seed)),
+          gen(static_cast<std::mt19937::result_type>(rng_seed)),
           dist(0),
           workshop_swap(std::get<bool>(params.at("workshop_swap"))) {}
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
