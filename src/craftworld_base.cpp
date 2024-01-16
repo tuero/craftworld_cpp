@@ -171,16 +171,7 @@ void CraftWorldGameState::HandleAgentUse() noexcept {
 }
 
 void CraftWorldGameState::apply_action(Action action) {
-    switch (action) {
-        case Action::kUp:
-        case Action::kRight:
-        case Action::kDown:
-        case Action::kLeft:
-        case Action::kUse:
-            break;
-        default:
-            throw std::invalid_argument("Unknown action.");
-    }
+    assert(is_valid_action(action));
 
     local_state.reward_signal = 0;
     if (action == Action::kUse) {
@@ -352,6 +343,7 @@ auto CraftWorldGameState::get_agent_index() const noexcept -> std::size_t {
 }
 
 auto CraftWorldGameState::get_indices(Element element) const noexcept -> std::vector<std::size_t> {
+    assert(is_valid_element(element));
     std::vector<std::size_t> indices;
     for (std::size_t index = 0; index < board.rows * board.cols; ++index) {
         if (board.item(index) == element) {

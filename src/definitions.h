@@ -11,7 +11,7 @@
 
 namespace craftworld {
 
-enum class Element : unsigned char {
+enum class Element {
     kAgent = 0,    // Env
     kWall = 1,
     kWorkshop1 = 2,

@@ -86,6 +86,24 @@ public:
     void reset();
 
     /**
+     * Check if the given element is valid.
+     * @param element Element to check
+     * @return True if element is valid, false otherwise
+     */
+    [[nodiscard]] constexpr static auto is_valid_element(Element element) -> bool {
+        return static_cast<int>(element) >= 0 && static_cast<int>(element) < static_cast<int>(kNumElements);
+    }
+
+    /**
+     * Check if the given action is valid.
+     * @param action Action to check
+     * @return True if action is valid, false otherwise
+     */
+    [[nodiscard]] constexpr static auto is_valid_action(Action action) -> bool {
+        return static_cast<int>(action) >= 0 && static_cast<int>(action) < static_cast<int>(kNumActions);
+    }
+
+    /**
      * Apply the action to the current state, and set the reward and signals.
      * @param action The action to apply, should be one of the legal actions
      */
