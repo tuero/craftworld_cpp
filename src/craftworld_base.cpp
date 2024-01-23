@@ -357,6 +357,10 @@ auto CraftWorldGameState::get_all_subgoals() const noexcept -> std::vector<std::
     return all_subgoals;
 }
 
+auto CraftWorldGameState::subgoal_to_str(Subgoal subgoal) const noexcept -> std::string {
+    return kSubgoalToStr.at(subgoal);
+}
+
 std::ostream &operator<<(std::ostream &os, const CraftWorldGameState &state) {
     for (std::size_t w = 0; w < state.board.cols + 2; ++w) {
         os << "-";

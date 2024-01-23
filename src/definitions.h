@@ -64,6 +64,13 @@ const std::vector<std::size_t> all_subgoals{
     static_cast<std::size_t>(Subgoal::kUseFurnace),
 };
 
+const std::unordered_map<Subgoal, std::string> kSubgoalToStr{
+    {Subgoal::kCollectTin, "tin"},     {Subgoal::kCollectCopper, "copper"}, {Subgoal::kCollectWood, "wood"},
+    {Subgoal::kCollectGrass, "grass"}, {Subgoal::kCollectIron, "iron"},     {Subgoal::kCollectGold, "gold"},
+    {Subgoal::kCollectGem, "gem"},     {Subgoal::kUseStation1, "ws1"},      {Subgoal::kUseStation2, "ws2"},
+    {Subgoal::kUseStation3, "ws3"},    {Subgoal::kUseFurnace, "furnace"},
+};
+
 constexpr int kNumElements = 27;
 constexpr int kPrimitiveStart = 8;
 constexpr int kRecipeStart = 15;

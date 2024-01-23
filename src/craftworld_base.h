@@ -216,6 +216,13 @@ public:
      */
     [[nodiscard]] auto get_all_subgoals() const noexcept -> std::vector<std::size_t>;
 
+    /**
+     * Get string representation of subgoal
+     * @param subgoal Subgoal to query
+     * @return String name of subgoal
+     */
+    [[nodiscard]] auto subgoal_to_str(Subgoal subgoal) const noexcept -> std::string;
+
     // All possible actions
     static const std::vector<Action> ALL_ACTIONS;
 
