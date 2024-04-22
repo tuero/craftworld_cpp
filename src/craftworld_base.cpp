@@ -1,7 +1,14 @@
 #include "craftworld_base.h"
 
+#include <nop/serializer.h>
+#include <nop/utility/buffer_reader.h>
+#include <nop/utility/buffer_writer.h>
+#include <nop/utility/stream_reader.h>
+#include <nop/utility/stream_writer.h>
+
 #include <algorithm>
 #include <cstdint>
+#include <sstream>
 #include <type_traits>
 
 #include "definitions.h"
@@ -36,10 +43,47 @@ auto CraftWorldGameState::operator==(const CraftWorldGameState &other) const noe
     return board == other.board && local_state == other.local_state;
 }
 
+auto CraftWorldGameState::operator!=(const CraftWorldGameState &other) const noexcept -> bool {
+    return !(*this == other);
+}
+
 const std::vector<Action> CraftWorldGameState::ALL_ACTIONS = {Action::kUp, Action::kRight, Action::kDown, Action::kLeft,
                                                               Action::kUse};
 
 // ---------------------------------------------------------------------------
+
+CraftWorldGameState::CraftWorldGameState(const std::vector<uint8_t> &byte_data)
+    : shared_state_ptr(std::make_shared<SharedStateInfo>()) {
+    std::stringstream ss;
+    ss.write((char const *)byte_data.data(), std::streamsize(byte_data.size()));    // NOLINT(*cstyle-cast)
+    nop::Deserializer<nop::StreamReader<std::stringstream>> deserializer{std::move(ss)};
+    deserializer.Read(&local_state);
+    SharedStateInfo &info = *shared_state_ptr;
+    deserializer.Read(&info);
+    deserializer.Read(&board);
+}
+
+auto CraftWorldGameState::serialize() const -> std::vector<uint8_t> {
+    nop::Serializer<nop::StreamWriter<std::stringstream>> serializer;
+    serializer.Write(local_state);
+    const SharedStateInfo &info = *shared_state_ptr;
+    serializer.Write(info);
+    serializer.Write(board);
+    auto &ss = serializer.writer().stream();
+    // discover size of data in stream
+    ss.seekg(0, std::ios::beg);
+    auto bof = ss.tellg();
+    ss.seekg(0, std::ios::end);
+    auto stream_size = std::size_t(ss.tellg() - bof);
+    ss.seekg(0, std::ios::beg);
+
+    // make your vector long enough
+    std::vector<uint8_t> byte_data(stream_size);
+
+    // read directly in
+    ss.read((char *)byte_data.data(), std::streamsize(byte_data.size()));    // NOLINT(*cstyle-cast)
+    return byte_data;
+}
 
 void CraftWorldGameState::reset() {
     // Board, local, and shared state info
@@ -48,7 +92,7 @@ void CraftWorldGameState::reset() {
     const std::size_t board_size = board.rows * board.cols;
 
     // Zorbist hashing for board
-    std::mt19937 gen(static_cast<std::mt19937::result_type>(shared_state_ptr->rng_seed));
+    std::mt19937 gen(static_cast<std::mt19937::result_type>(0));
     std::uniform_int_distribution<uint64_t> dist(0);
     for (std::size_t channel = 0; channel < kNumElements; ++channel) {
         for (std::size_t i = 0; i < board_size; ++i) {

@@ -1,6 +1,8 @@
 #ifndef CRAFTWORLD_DEFS_H_
 #define CRAFTWORLD_DEFS_H_
 
+#include <nop/structure.h>
+
 #include <array>
 #include <cassert>
 #include <cstdint>
@@ -321,7 +323,7 @@ const std::array<std::pair<int, int>, 5> kDirectionOffsets{{
 }};
 
 struct Board {
-    Board() = delete;
+    Board() = default;
     Board(std::size_t rows_, std::size_t cols_, Element goal_)
         : rows(rows_), cols(cols_), goal(goal_), grid(rows_ * cols_, Element::kEmpty) {}
 
@@ -341,12 +343,13 @@ struct Board {
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     uint64_t zorb_hash = 0;
-    std::size_t rows;
-    std::size_t cols;
+    std::size_t rows{};
+    std::size_t cols{};
     Element goal;
     std::size_t agent_idx{};
     std::vector<Element> grid;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+    NOP_STRUCTURE(Board, zorb_hash, rows, cols, goal, agent_idx, grid);
 };
 
 }    // namespace craftworld

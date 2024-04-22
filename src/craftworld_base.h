@@ -26,7 +26,6 @@ using GameParameters = std::unordered_map<std::string, GameParameter>;
 
 // Default game parameters
 static const GameParameters kDefaultGameParams{
-    {"rng_seed", GameParameter(0)},    // Seed for anything that uses the rng
     {"game_board_str",
      GameParameter(std::string(
          "14|14|25|26|26|26|26|08|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|26|12|26|07|26|26|26|"
@@ -40,25 +39,19 @@ static const GameParameters kDefaultGameParams{
 
 // Shared global state information relevant to all states for the given game
 struct SharedStateInfo {
-    SharedStateInfo(GameParameters params_)
-        : params(std::move(params_)),
-          rng_seed(std::get<int>(params.at("rng_seed"))),
-          game_board_str(std::get<std::string>(params.at("game_board_str"))),
-          gen(static_cast<std::mt19937::result_type>(rng_seed)),
-          dist(0),
+    SharedStateInfo() = default;
+    SharedStateInfo(GameParameters params)
+        : game_board_str(std::get<std::string>(params.at("game_board_str"))),
           workshop_swap(std::get<bool>(params.at("workshop_swap"))) {}
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    GameParameters params;                                        // Copy of game parameters for state resetting
-    int rng_seed;                                                 // Seed
     std::string game_board_str;                                   // String representation of the starting state
-    std::mt19937 gen;                                             // Generator for RNG
-    std::uniform_int_distribution<int> dist;                      // Random int distribution
     std::unordered_map<std::size_t, uint64_t> zrbht_world;        // Zobrist hashing table
     std::unordered_map<std::size_t, uint64_t> zrbht_inventory;    // Zobrist hashing table for inventory
     std::vector<std::size_t> neighbours;                          // Reusable buffer for finding neighbours
-    const std::size_t MAX_INV_HASH_ITEMS = 20;                    // NOLINT
+    std::size_t MAX_INV_HASH_ITEMS = 20;                          // NOLINT
     bool workshop_swap = false;                                   // NOLINT
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+    NOP_STRUCTURE(SharedStateInfo, game_board_str, zrbht_world, zrbht_inventory, MAX_INV_HASH_ITEMS, workshop_swap);
 };
 
 // Information specific for the current game state
@@ -71,6 +64,7 @@ struct LocalState {
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
     auto operator==(const LocalState &other) const noexcept -> bool;
+    NOP_STRUCTURE(LocalState, current_reward, reward_signal, inventory);
 };
 
 // Game state
@@ -78,12 +72,25 @@ class CraftWorldGameState {
 public:
     CraftWorldGameState(const GameParameters &params = kDefaultGameParams);
 
+    /**
+     * Construct from byte serialization.
+     * @note this is not safe, only for internal use.
+     */
+    CraftWorldGameState(const std::vector<uint8_t> &byte_data);
+
     auto operator==(const CraftWorldGameState &other) const noexcept -> bool;
+    auto operator!=(const CraftWorldGameState &other) const noexcept -> bool;
 
     /**
      * Reset the environment to the state as given by the GameParameters
      */
     void reset();
+
+    /**
+     * Serialize the state
+     * @return char vector representing state
+     */
+    [[nodiscard]] auto serialize() const -> std::vector<uint8_t>;
 
     /**
      * Check if the given element is valid.
