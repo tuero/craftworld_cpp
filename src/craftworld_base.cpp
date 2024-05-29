@@ -55,12 +55,13 @@ const std::vector<Action> CraftWorldGameState::ALL_ACTIONS = {Action::kUp, Actio
 CraftWorldGameState::CraftWorldGameState(const std::vector<uint8_t> &byte_data)
     : shared_state_ptr(std::make_shared<SharedStateInfo>()) {
     std::stringstream ss;
-    ss.write((char const *)byte_data.data(), std::streamsize(byte_data.size()));    // NOLINT(*cstyle-cast)
+    ss.write(reinterpret_cast<char const *>(byte_data.data()), std::streamsize(byte_data.size()));
     nop::Deserializer<nop::StreamReader<std::stringstream>> deserializer{std::move(ss)};
     deserializer.Read(&local_state);
     SharedStateInfo &info = *shared_state_ptr;
     deserializer.Read(&info);
     deserializer.Read(&board);
+    InitZrbhtTable();
 }
 
 auto CraftWorldGameState::serialize() const -> std::vector<uint8_t> {
@@ -81,14 +82,11 @@ auto CraftWorldGameState::serialize() const -> std::vector<uint8_t> {
     std::vector<uint8_t> byte_data(stream_size);
 
     // read directly in
-    ss.read((char *)byte_data.data(), std::streamsize(byte_data.size()));    // NOLINT(*cstyle-cast)
+    ss.read(reinterpret_cast<char *>(byte_data.data()), std::streamsize(byte_data.size()));
     return byte_data;
 }
 
-void CraftWorldGameState::reset() {
-    // Board, local, and shared state info
-    board = util::parse_board_str(shared_state_ptr->game_board_str);
-    local_state = LocalState();
+void CraftWorldGameState::InitZrbhtTable() noexcept {
     const std::size_t board_size = board.rows * board.cols;
 
     // Zorbist hashing for board
@@ -99,16 +97,25 @@ void CraftWorldGameState::reset() {
             shared_state_ptr->zrbht_world[(channel * board_size) + i] = dist(gen);
         }
     }
-
-    // Set initial hash for game world
-    for (std::size_t i = 0; i < board_size; ++i) {
-        board.zorb_hash ^= shared_state_ptr->zrbht_world.at((static_cast<std::size_t>(board.item(i)) * board_size) + i);
-    }
     // Zorbist hashing for inventory
     for (std::size_t channel = 0; channel < kNumElements; ++channel) {
         for (std::size_t i = 0; i < shared_state_ptr->MAX_INV_HASH_ITEMS; ++i) {
             shared_state_ptr->zrbht_inventory[(channel * shared_state_ptr->MAX_INV_HASH_ITEMS) + i] = dist(gen);
         }
+    }
+}
+
+void CraftWorldGameState::reset() {
+    // Board, local, and shared state info
+    board = util::parse_board_str(shared_state_ptr->game_board_str);
+    local_state = LocalState();
+
+    InitZrbhtTable();
+
+    // Set initial hash for game world
+    const std::size_t board_size = board.rows * board.cols;
+    for (std::size_t i = 0; i < board_size; ++i) {
+        board.zorb_hash ^= shared_state_ptr->zrbht_world.at((static_cast<std::size_t>(board.item(i)) * board_size) + i);
     }
 }
 

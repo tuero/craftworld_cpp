@@ -51,7 +51,7 @@ struct SharedStateInfo {
     std::size_t MAX_INV_HASH_ITEMS = 20;                          // NOLINT
     bool workshop_swap = false;                                   // NOLINT
     // NOLINTEND(misc-non-private-member-variables-in-classes)
-    NOP_STRUCTURE(SharedStateInfo, game_board_str, zrbht_world, zrbht_inventory, MAX_INV_HASH_ITEMS, workshop_swap);
+    NOP_STRUCTURE(SharedStateInfo, game_board_str, MAX_INV_HASH_ITEMS, workshop_swap);
 };
 
 // Information specific for the current game state
@@ -249,6 +249,7 @@ private:
     void HandleAgentMovement(Action action) noexcept;
     void HandleAgentUse() noexcept;
     void RemoveItemFromBoard(std::size_t index) noexcept;
+    void InitZrbhtTable() noexcept;
 
     std::shared_ptr<SharedStateInfo> shared_state_ptr;
     Board board;

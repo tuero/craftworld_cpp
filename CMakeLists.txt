@@ -17,7 +17,7 @@ target_compile_features(craftworld PUBLIC cxx_std_17)
 target_include_directories(craftworld PUBLIC
     ${PROJECT_SOURCE_DIR}/include
 )
-target_include_directories(craftworld PUBLIC ${PROJECT_SOURCE_DIR}/include/libnop/include)
+target_include_directories(craftworld SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/include/libnop/include)
 
 # Build tests
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
