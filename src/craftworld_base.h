@@ -205,6 +205,11 @@ public:
     [[nodiscard]] auto get_hash() const noexcept -> uint64_t;
 
     /**
+     * Add the given element to the inventory
+     */
+    void add_to_inventory(Element element, std::size_t count);
+
+    /**
      * Get the agent index position, even if in exit
      * @return Agent index
      */

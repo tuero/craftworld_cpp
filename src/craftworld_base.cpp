@@ -389,6 +389,13 @@ auto CraftWorldGameState::get_hash() const noexcept -> uint64_t {
     return board.zorb_hash;
 }
 
+void CraftWorldGameState::add_to_inventory(Element element, std::size_t count) {
+    if (!is_valid_element(element)) {
+        throw std::invalid_argument("Unknown element type.");
+    }
+    AddToInventory(element, count);
+}
+
 auto CraftWorldGameState::get_agent_index() const noexcept -> std::size_t {
     return board.agent_idx;
 }
