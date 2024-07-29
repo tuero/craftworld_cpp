@@ -281,7 +281,7 @@ void CraftWorldGameState::get_observation(std::vector<float> &obs) const noexcep
     }
     // Inventory (entire channel is filled with # of that item)
     for (const auto &[inv_el, inv_count] : local_state.inventory) {
-        const auto channel = static_cast<std::size_t>(inv_el) + kNumEnvironment;
+        const auto channel = static_cast<std::size_t>(inv_el) + kNumPrimitive;
         std::fill_n(obs.begin() + static_cast<int>(channel * channel_length), channel_length,
                     static_cast<float>(inv_count));
     }
