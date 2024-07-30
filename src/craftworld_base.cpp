@@ -253,6 +253,11 @@ auto CraftWorldGameState::observation_shape() const noexcept -> std::array<int, 
     return {kNumChannels, static_cast<int>(board.rows), static_cast<int>(board.cols)};
 }
 
+auto CraftWorldGameState::observation_shape_binary() const noexcept -> std::array<int, 3> {
+    // Empty doesn't get a channel, empty = all channels 0
+    return {kNumBinaryChannels, static_cast<int>(board.rows), static_cast<int>(board.cols)};
+}
+
 auto CraftWorldGameState::observation_shape_environment() const noexcept -> std::array<int, 3> {
     return {kNumEnvironment + kNumPrimitive, static_cast<int>(board.rows), static_cast<int>(board.cols)};
 }
@@ -288,6 +293,36 @@ void CraftWorldGameState::get_observation(std::vector<float> &obs) const noexcep
     // Current goal for this level (26-34)
     const std::size_t channel = kNumChannels - kNumGoals + static_cast<std::size_t>(board.goal) - kRecipeStart;
     std::fill_n(obs.begin() + static_cast<int>(channel * channel_length), channel_length, static_cast<float>(1));
+}
+
+auto CraftWorldGameState::get_binary_observation() const noexcept -> std::vector<float> {
+    const std::size_t channel_length = board.rows * board.cols;
+    const std::size_t obs_size = kNumBinaryChannels * channel_length;
+
+    std::vector<float> obs(obs_size, 0);
+
+    // Board environment + primitives + agent
+    for (std::size_t i = 0; i < channel_length; ++i) {
+        const auto el = board.item(i);
+        if (el != Element::kEmpty) {
+            obs[static_cast<std::size_t>(el) * channel_length + i] = 1;
+        }
+    }
+    // Inventory (entire channel is filled with maximum of 2 elements on consecutive binary channels)
+    for (const auto &[inv_el, inv_count] : local_state.inventory) {
+        auto channel = kNumPrimitive + kNumEnvironment + 2 * (static_cast<std::size_t>(inv_el) - kNumEnvironment);
+        std::fill_n(obs.begin() + static_cast<int>(channel * channel_length), channel_length, 1);
+        if (inv_count > 1) {
+            ++channel;
+            std::fill_n(obs.begin() + static_cast<int>(channel * channel_length), channel_length, 1);
+        }
+    }
+    // Current goal for this level (26-34)
+    const std::size_t channel =
+        kNumEnvironment + kNumPrimitive + (2 * kNumInventory) + (static_cast<std::size_t>(board.goal) - kRecipeStart);
+    std::fill_n(obs.begin() + static_cast<int>(channel * channel_length), channel_length, static_cast<float>(1));
+
+    return obs;
 }
 
 auto CraftWorldGameState::get_observation_environment() const noexcept -> std::vector<float> {

@@ -142,6 +142,12 @@ public:
     [[nodiscard]] auto observation_shape() const noexcept -> std::array<int, 3>;
 
     /**
+     * Get the shape the observations should be viewed as for the binary observation.
+     * @return vector indicating observation CHW
+     */
+    [[nodiscard]] auto observation_shape_binary() const noexcept -> std::array<int, 3>;
+
+    /**
      * Get the shape the observations should be viewed as.
      * @return vector indicating observation CHW
      */
@@ -153,6 +159,13 @@ public:
      * @return vector where 1 represents element at position
      */
     [[nodiscard]] auto get_observation() const noexcept -> std::vector<float>;
+
+    /**
+     * Get a flat representation of the current state observation in binary format.
+     * The observation should be viewed as the shape given by observation_shape().
+     * @return vector where 1 represents element at position
+     */
+    [[nodiscard]] auto get_binary_observation() const noexcept -> std::vector<float>;
 
     /**
      * Get a flat representation of the current state observation, and store in the given vector.

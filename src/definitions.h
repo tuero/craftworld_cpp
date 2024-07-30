@@ -128,6 +128,7 @@ constexpr std::size_t kNumGoals = kNumRecipeTypes;
 // Channels
 // Environment (7), Primitives (5), Inventory (11), Level Goal (11)
 constexpr std::size_t kNumChannels = kNumEnvironment + kNumPrimitive + kNumInventory + kNumGoals;
+constexpr std::size_t kNumBinaryChannels = kNumEnvironment + kNumPrimitive + (2 * kNumInventory) + kNumGoals;
 
 struct RecipeInputItem {
     Element element;
