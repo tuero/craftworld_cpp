@@ -223,6 +223,13 @@ public:
     void add_to_inventory(Element element, std::size_t count);
 
     /**
+     * Get the query element count in the inventory
+     * @param element Element to query
+     * @return element count in inventory
+     */
+    [[nodiscard]] int check_inventory(Element element);
+
+    /**
      * Get the agent index position, even if in exit
      * @return Agent index
      */

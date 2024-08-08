@@ -431,6 +431,13 @@ void CraftWorldGameState::add_to_inventory(Element element, std::size_t count) {
     AddToInventory(element, count);
 }
 
+int CraftWorldGameState::check_inventory(Element element) {
+    if (local_state.inventory.find(element) == local_state.inventory.end()) {
+        return 0;
+    }
+    return static_cast<int>(local_state.inventory.at(element));
+}
+
 auto CraftWorldGameState::get_agent_index() const noexcept -> std::size_t {
     return board.agent_idx;
 }
