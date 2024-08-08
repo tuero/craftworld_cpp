@@ -431,7 +431,7 @@ void CraftWorldGameState::add_to_inventory(Element element, std::size_t count) {
     AddToInventory(element, count);
 }
 
-int CraftWorldGameState::check_inventory(Element element) {
+int CraftWorldGameState::check_inventory(Element element) const {
     if (local_state.inventory.find(element) == local_state.inventory.end()) {
         return 0;
     }

@@ -227,7 +227,7 @@ public:
      * @param element Element to query
      * @return element count in inventory
      */
-    [[nodiscard]] int check_inventory(Element element);
+    [[nodiscard]] int check_inventory(Element element) const;
 
     /**
      * Get the agent index position, even if in exit
