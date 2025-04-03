@@ -162,7 +162,9 @@ void CraftWorldGameState::HandleAgentUse() noexcept {
         if (IsPrimitive(neighbour_idx)) {
             // Primitive elements on map are collectable, add to inventory
             const Element el = board.item(neighbour_idx);
-            AddToInventory(el, 1);
+            if (el != Element::kGrass) {
+                AddToInventory(el, 1);
+            }
             RemoveItemFromBoard(neighbour_idx);
             local_state.reward_signal |= static_cast<std::underlying_type_t<RewardCode>>(kPrimitiveRewardMap.at(el));
             break;
