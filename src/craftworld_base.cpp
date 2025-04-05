@@ -271,6 +271,10 @@ auto CraftWorldGameState::get_observation() const noexcept -> std::vector<float>
     return obs;
 }
 
+auto CraftWorldGameState::observation_shape_alt() const noexcept -> std::array<int, 3> {
+    return {kNumElements, static_cast<int>(board.rows) + 4, static_cast<int>(board.cols) + 4};
+}
+
 void CraftWorldGameState::get_observation(std::vector<float> &obs) const noexcept {
     const std::size_t channel_length = board.rows * board.cols;
     const std::size_t obs_size = kNumChannels * channel_length;
@@ -295,6 +299,99 @@ void CraftWorldGameState::get_observation(std::vector<float> &obs) const noexcep
     // Current goal for this level (26-34)
     const std::size_t channel = kNumChannels - kNumGoals + static_cast<std::size_t>(board.goal) - kRecipeStart;
     std::fill_n(obs.begin() + static_cast<int>(channel * channel_length), channel_length, static_cast<float>(1));
+}
+
+auto CraftWorldGameState::get_observation_alt() const noexcept -> std::vector<float> {
+    const auto rows = board.rows + 4;
+    const auto cols = board.cols + 4;
+    const auto channel_length = rows * cols;
+    const std::size_t obs_size = kNumElements * channel_length;
+
+    std::vector<float> obs(kNumElements * channel_length, 0);
+
+    // Inner border is wall
+    for (std::size_t w = 1; w < cols - 1; ++w) {
+        const auto channel = static_cast<std::size_t>(Element::kWall);
+        obs[channel * channel_length + (1 * cols + w)] = 1;
+        obs[channel * channel_length + ((rows - 2) * cols + w)] = 1;
+    }
+    for (std::size_t h = 1; h < rows - 1; ++h) {
+        const auto channel = static_cast<std::size_t>(Element::kWall);
+        obs[channel * channel_length + (h * cols + 1)] = 1;
+        obs[channel * channel_length + (h * cols + (cols - 2))] = 1;
+    }
+
+    // Outer border is empty (for now, dont forget to undo for inventory items)
+    for (std::size_t w = 0; w < cols; ++w) {
+        const auto channel = static_cast<std::size_t>(Element::kEmpty);
+        obs[channel * channel_length + (0 * cols + w)] = 1;
+        obs[channel * channel_length + ((rows - 1) * cols + w)] = 1;
+    }
+    for (std::size_t h = 1; h < rows - 1; ++h) {
+        const auto channel = static_cast<std::size_t>(Element::kEmpty);
+        obs[channel * channel_length + (h * cols + 0)] = 1;
+        obs[channel * channel_length + (h * cols + (cols - 1))] = 1;
+    }
+
+    // Board environment + primitives + agent
+    std::size_t i = 0;
+    for (std::size_t r = 2; r < rows - 2; ++r) {
+        for (std::size_t c = 2; c < cols - 2; ++c) {
+            const auto el = board.item(i);
+            auto idx = (r * cols) + c;
+            obs[static_cast<std::size_t>(el) * channel_length + idx] = 1;
+            ++i;
+        }
+    }
+
+    // Inventory (fill around the border)
+    for (const auto &[inv_el, inv_count] : local_state.inventory) {
+        switch (inv_el) {
+            case Element::kWood:
+                obs[static_cast<std::size_t>(inv_el) * channel_length + 0] = 1;
+                obs[static_cast<std::size_t>(Element::kEmpty) * channel_length + 0] = 0;
+                if (inv_count > 1) {
+                    obs[static_cast<std::size_t>(inv_el) * channel_length + 1] = 1;
+                    obs[static_cast<std::size_t>(Element::kEmpty) * channel_length + 1] = 0;
+                }
+                break;
+            case Element::kCopper:
+                obs[static_cast<std::size_t>(inv_el) * channel_length + 2] = 1;
+                obs[static_cast<std::size_t>(Element::kEmpty) * channel_length + 2] = 0;
+                break;
+            case Element::kTin:
+                obs[static_cast<std::size_t>(inv_el) * channel_length + 3] = 1;
+                obs[static_cast<std::size_t>(Element::kEmpty) * channel_length + 3] = 0;
+                break;
+            case Element::kIron:
+                obs[static_cast<std::size_t>(inv_el) * channel_length + 4] = 1;
+                obs[static_cast<std::size_t>(Element::kEmpty) * channel_length + 4] = 0;
+                break;
+            case Element::kStick:
+                obs[static_cast<std::size_t>(inv_el) * channel_length + 5] = 1;
+                obs[static_cast<std::size_t>(Element::kEmpty) * channel_length + 5] = 0;
+                if (inv_count > 1) {
+                    obs[static_cast<std::size_t>(inv_el) * channel_length + 6] = 1;
+                    obs[static_cast<std::size_t>(Element::kEmpty) * channel_length + 6] = 0;
+                }
+                break;
+            case Element::kBronzeBar:
+                obs[static_cast<std::size_t>(inv_el) * channel_length + 7] = 1;
+                obs[static_cast<std::size_t>(Element::kEmpty) * channel_length + 7] = 0;
+                break;
+            case Element::kBronzePick:
+                obs[static_cast<std::size_t>(inv_el) * channel_length + 8] = 1;
+                obs[static_cast<std::size_t>(Element::kEmpty) * channel_length + 8] = 0;
+                break;
+            case Element::kIronPick:
+                obs[static_cast<std::size_t>(inv_el) * channel_length + 9] = 1;
+                obs[static_cast<std::size_t>(Element::kEmpty) * channel_length + 9] = 0;
+                break;
+            default:
+                break;
+        }
+    }
+    return obs;
 }
 
 auto CraftWorldGameState::get_binary_observation() const noexcept -> std::vector<float> {

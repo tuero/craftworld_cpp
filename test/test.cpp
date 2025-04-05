@@ -1,5 +1,6 @@
 #include <craftworld/craftworld.h>
 
+#include <iomanip>
 #include <iostream>
 
 using namespace craftworld;
@@ -11,9 +12,23 @@ const std::unordered_map<std::string, Action> ActionMap{
 void print_state(const CraftWorldGameState &state) {
     std::cout << state << std::endl;
     std::cout << state.get_hash() << std::endl;
-    std::cout << "Pruned subgoals: ";
-    std::cout << std::endl;
-    std::cout << "Reward signal: " << state.get_reward_signal() << std::endl;
+    const auto obs = state.get_observation_alt();
+    const auto [c, h, w] = state.observation_shape_alt();
+
+    for (int _h = 0; _h < h; ++_h) {
+        for (int _w = 0; _w < w; ++_w) {
+            int idx = -1;
+            int count = 0;
+            for (int _c = 0; _c < c; ++_c) {
+                if (obs[_c * (h * w) + _h * w + _w] == 1) {
+                    idx = _c;
+                    ++count;
+                }
+            }
+            std::cout << std::setfill('0') << std::setw(2) << idx << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 void test_play() {
